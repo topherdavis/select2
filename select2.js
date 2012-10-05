@@ -1323,14 +1323,14 @@ the specific language governing permissions and limitations under the Apache Lic
         },
 
         // abstract
-        selectHighlighted: function () {
+        selectHighlighted: function (e) {
             var index=this.highlight(),
                 highlighted=this.results.find(".select2-highlighted").not(".select2-disabled"),
                 data = highlighted.closest('.select2-result-selectable').data("select2-data");
             if (data) {
                 highlighted.addClass("select2-disabled");
                 this.highlight(index);
-                this.onSelect(data);
+                this.onSelect(data, e);
             }
         },
 
@@ -1476,7 +1476,7 @@ the specific language governing permissions and limitations under the Apache Lic
                             return;
                         case KEY.TAB:
                         case KEY.ENTER:
-                            this.selectHighlighted();
+                            this.selectHighlighted(e);
                             killEvent(e);
                             return;
                         case KEY.ESC:
@@ -1524,7 +1524,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.clear();
                 killEventImmediately(e);
                 this.close();
-                this.triggerChange();
+                this.triggerChange({event: e});
                 this.selection.focus();
             }));
 
@@ -1680,7 +1680,7 @@ the specific language governing permissions and limitations under the Apache Lic
         },
 
         // single
-        onSelect: function (data) {
+        onSelect: function (data, e) {
             var old = this.opts.element.val();
 
             this.opts.element.val(this.id(data));
@@ -1688,7 +1688,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.close();
             this.selection.focus();
 
-            if (!equal(old, this.id(data))) { this.triggerChange(); }
+            if (!equal(old, this.id(data))) { this.triggerChange({event: e}); }
         },
 
         // single
@@ -1855,7 +1855,7 @@ the specific language governing permissions and limitations under the Apache Lic
                         return;
                     case KEY.ENTER:
                     case KEY.TAB:
-                        this.selectHighlighted();
+                        this.selectHighlighted(e);
                         killEvent(e);
                         return;
                     case KEY.ESC:
@@ -2038,11 +2038,11 @@ the specific language governing permissions and limitations under the Apache Lic
         },
 
         // multi
-        onSelect: function (data) {
+        onSelect: function (data, e) {
             this.addSelectedChoice(data);
             if (this.select || !this.opts.closeOnSelect) this.postprocessResults();
 
-            if (this.opts.closeOnSelect) {
+            if (this.opts.closeonSelect) {
                 this.close();
                 this.search.width(10);
             } else {
@@ -2058,7 +2058,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             // since its not possible to select an element that has already been
             // added we do not need to check if this is a new element before firing change
-            this.triggerChange({ added: data });
+            this.triggerChange({ added: data, event: e});
 
             this.focusSearch();
         },
